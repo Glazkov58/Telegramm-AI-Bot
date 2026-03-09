@@ -1,0 +1,10 @@
+com\example\bot\OpenRouterRequest$Message.class
+com\example\bot\OpenRouterResponse.class
+com\example\bot\OpenRouterRequest.class
+com\example\bot\OpenRouterResponse$Choice$Message.class
+com\example\bot\OpenRouterResponse$Choice.class
+com\example\bot\OpenRouterService.class
+com\example\bot\MyTelegramBot.class
+com\example\bot\Main.class
+com\example\bot\OpenRouterServiceImpl.class
+com\example\bot\AppConfig.class

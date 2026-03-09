@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Управление тарифами — Платные подписки</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding-top: 60px;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      padding: 1rem 1rem;
+      width: 250px;
+      background-color: #f8f9fa;
+      border-right: 1px solid #e9ecef;
+    }
+    .main-content {
+      margin-left: 260px;
+      padding: 0 1rem;
+    }
+    .status-badge {
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+
+  <div th:replace="fragments/sidebar :: sidebar"></div>
+
+  <main class="main-content">
+    <div class="container-fluid mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>💳 Управление тарифами</h1>
+      </div>
+
+      <!-- Форма добавления нового тарифа -->
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Добавить новый тариф</h5>
+        </div>
+        <div class="card-body">
+          <form th:action="@{/admin/tariffs}" method="post">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <input type="text" name="name" class="form-control" placeholder="Название (Lite, Pro...)" required>
+              </div>
+              <div class="col-md-3">
+                <input type="number" name="price" class="form-control" placeholder="Цена (₽)" min="1" required>
+              </div>
+              <div class="col-md-3">
+                <input type="number" name="durationDays" class="form-control" placeholder="Срок (дней)" min="1" required>
+              </div>
+              <div class="col-md-2">
+                <select name="isActive" class="form-select">
+                  <option value="true">Активен</option>
+                  <option value="false">Отключён</option>
+                </select>
+              </div>
+              <div class="col-md-1 d-flex align-items-end">
+                <button type="submit" class="btn btn-success">Добавить</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Список тарифов -->
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Существующие тарифы</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>Название</th>
+                  <th>Цена</th>
+                  <th>Срок</th>
+                  <th>Статус</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="tariff : ${tariffs}">
+                  <td th:text="${tariff.title}">Lite</td>
+                  <td>
+                    <span th:text="${tariff.price}"></span> ₽
+                  </td>
+                  <td th:text="${tariff.durationDays} + ' дней'">30 дней</td>
+                  <td>
+                    <span class="badge status-badge"
+                          th:classappend="${tariff.isActive} ? 'bg-success' : 'bg-secondary'"
+                          th:text="${tariff.isActive} ? 'Активен' : 'Отключён'">
+                    </span>
+                  </td>
+                  <td>
+                    <!-- Переключение активности -->
+                    <form th:action="@{/admin/tariffs/{id}/toggle(id=${tariff.id})}" method="post" style="display:inline;">
+                      <button type="submit" class="btn btn-sm"
+                              th:classappend="${tariff.isActive} ? 'btn-outline-secondary' : 'btn-outline-success'"
+                              th:text="${tariff.isActive} ? 'Отключить' : 'Включить'">
+                      </button>
+                    </form>
+
+                    <!-- Удаление -->
+                    <form th:action="@{/admin/tariffs/{id}/delete(id=${tariff.id})}" method="post" style="display:inline;"
+                          onsubmit="return confirm('Удалить тариф?')">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                    </form>
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(tariffs)}">
+                  <td colspan="5" class="text-center text-muted">Нет тарифов</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

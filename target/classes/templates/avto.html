@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Управление ролями ИИ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .prompt-box { font-family: Consolas, monospace; font-size: 0.9em; }
+    .role-header { border-left: 4px solid #0d6efd; }
+  </style>
+</head>
+<body>
+  <div class="container mt-4">
+    <h1 class="mb-4">🎭 Роли ИИ и системные промты</h1>
+    <p class="text-muted">
+      Выберите роль для ИИ. Каждая роль использует свой <strong>системный промт</strong>, 
+      который определяет стиль и поведение ответов.
+    </p>
+
+    <div class="row g-4">
+      <div class="col-md-6" th:each="role : ${roles}">
+        <div class="card role-header">
+          <div class="card-header bg-light">
+            <h5 class="mb-0" th:text="${role.name}">Оценщик</h5>
+          </div>
+          <div class="card-body">
+            <form th:action="@{/admin/roles/update}" method="post">
+              <input type="hidden" name="id" th:value="${role.id}" />
+              <div class="mb-3">
+                <label class="form-label">Системный промт:</label>
+                <textarea 
+                  name="systemPrompt" 
+                  class="form-control prompt-box" 
+                  rows="5"
+                  th:text="${role.systemPrompt}"
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Сохранить промт</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 alert alert-info">
+      <strong>Как это работает?</strong><br>
+      Когда пользователь выбирает роль (например, через команду <code>/role Оценщик</code>), 
+      бот будет добавлять этот промт как первое сообщение с ролью <code>system</code> 
+      в запрос к OpenRouter.
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

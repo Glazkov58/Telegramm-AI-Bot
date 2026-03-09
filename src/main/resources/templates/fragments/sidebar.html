@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sidebar Fragment</title>
+</head>
+<body>
+
+<!-- Боковое меню -->
+<nav th:fragment="sidebar" class="sidebar">
+  <h5 class="text-center mb-4">🔧 Админка бота</h5>
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link" href="/admin/users">👥 Пользователи</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/admin/roles">🎭 Роли ИИ</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/admin/models">🧠 Модели ИИ</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/admin/tariffs">💳 Тарифы</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/admin/tariffs-admin">💳 Управление Тарифами</a>
+    </li>
+    <!-- Дополнительно: если добавите управление настройками -->
+    <!-- <li class="nav-item">
+      <a class="nav-link" href="/admin/settings">⚙️ Настройки</a>
+    </li> -->
+  </ul>
+  <div class="mt-5 small text-muted text-center">
+    Версия: 1.0
+  </div>
+</nav>
+
+</body>
+</html>

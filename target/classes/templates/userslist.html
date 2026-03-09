@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Управление пользователями</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding-top: 60px;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      padding: 1rem 1rem;
+      width: 250px;
+      background-color: #f8f9fa;
+      border-right: 1px solid #e9ecef;
+    }
+    .main-content {
+      margin-left: 260px;
+      padding: 0 1rem;
+    }
+    .badge-blocked { background-color: #dc3545; }
+    .badge-premium { background-color: #ffc107; color: #000; }
+    .badge-free { background-color: #6c757d; }
+    .actions-col { min-width: 250px; }
+  </style>
+</head>
+<body>
+
+  <!-- Боковое меню -->
+  <div th:replace="fragments/sidebar :: sidebar"></div>
+
+  <!-- Основной контент -->
+  <main class="main-content">
+    <div class="container-fluid mt-4">
+      <h1 class="mb-4">👥 Управление пользователями</h1>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Имя / Юзернейм</th>
+              <th>Статус</th>
+              <th>Тариф</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="user : ${users}">
+              <td th:text="${user.id}">123456789</td>
+              <td>
+                <strong th:text="${user.firstName} ?: '—'">Иван</strong><br>
+                <small th:if="${user.username}" th:text="'@' + ${user.username}">—</small>
+              </td>
+              <td>
+                <span th:if="${user.blocked}" class="badge badge-blocked">
+                  Заблокирован
+                  <span th:if="${user.blockedUntil}" th:text="'до ' + ${#temporals.format(user.blockedUntil, 'dd.MM.yyyy')}"></span>
+                  <span th:unless="${user.blockedUntil}">навсегда</span>
+                </span>
+                <span th:unless="${user.blocked}" class="badge bg-success">Активен</span>
+              </td>
+              <td>
+                <!-- Исправлено: используем LocalDateTime.now() через Thymeleaf -->
+                <span th:if="${user.premiumUntil != null && #temporals.isAfter(user.premiumUntil, #temporals.createNow())}" class="badge badge-premium">
+                  Платный до <span th:text="${#temporals.format(user.premiumUntil, 'dd.MM.yyyy')}"></span>
+                </span>
+                <span th:unless="${user.premiumUntil != null && #temporals.isAfter(user.premiumUntil, #temporals.createNow())}" class="badge badge-free">Бесплатный</span>
+              </td>
+              <td class="actions-col">
+                <form th:action="@{/admin/users/action}" method="post" style="display: inline;" th:unless="${user.blocked}">
+                  <input type="hidden" name="userId" th:value="${user.id}" />
+                  <input type="hidden" name="action" value="block_temp" />
+                  <input type="number" name="days" value="7" min="1" max="365" style="width: 60px;" class="form-control form-control-sm d-inline" />
+                  <button type="submit" class="btn btn-sm btn-outline-warning">Заблокировать</button>
+                </form>
+                <form th:action="@{/admin/users/action}" method="post" style="display: inline;" th:unless="${user.blocked}">
+                  <input type="hidden" name="userId" th:value="${user.id}" />
+                  <input type="hidden" name="action" value="block_permanent" />
+                  <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Блокировать навсегда?')">Навсегда</button>
+                </form>
+                <form th:action="@{/admin/users/action}" method="post" style="display: inline;" th:if="${user.blocked}">
+                  <input type="hidden" name="userId" th:value="${user.id}" />
+                  <input type="hidden" name="action" value="unblock" />
+                  <button type="submit" class="btn btn-sm btn-outline-success">Разблокировать</button>
+                </form>
+                <br class="mt-1" />
+                <form th:action="@{/admin/users/action}" method="post" style="display: inline;" th:unless="${user.premiumUntil != null && #temporals.isAfter(user.premiumUntil, #temporals.createNow())}">
+                  <input type="hidden" name="userId" th:value="${user.id}" />
+                  <input type="hidden" name="action" value="premium" />
+                  <input type="number" name="days" value="30" min="1" max="3650" style="width: 60px;" class="form-control form-control-sm d-inline" />
+                  <button type="submit" class="btn btn-sm btn-warning mt-1">Выдать премиум</button>
+                </form>
+                <form th:action="@{/admin/users/action}" method="post" style="display: inline;" th:if="${user.premiumUntil != null && #temporals.isAfter(user.premiumUntil, #temporals.createNow())}">
+                  <input type="hidden" name="userId" th:value="${user.id}" />
+                  <input type="hidden" name="action" value="premium_off" />
+                  <button type="submit" class="btn btn-sm btn-outline-secondary mt-1" onclick="return confirm('Отключить премиум?')">Отключить</button>
+                </form>
+              </td>
+            </tr>
+            <tr th:if="${users.isEmpty()}">
+              <td colspan="5" class="text-center text-muted">Нет пользователей</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
