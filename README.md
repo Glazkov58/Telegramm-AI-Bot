@@ -54,3 +54,8 @@ src/
 │       └── application.properties
 
 ## Демонстрация
+![Админка пользователей](docs/screenshots/admin-users.PNG)
+![Админка моделей](docs/screenshots/admin-models.PNG)
+![Админка ролей](docs/screenshots/admin-roles.PNG)
+![Админка тарифов](docs/screenshots/admin-tariffs.PNG)
+![Интерфейс чата с ботом](docs/screenshots/bot-start.PNG)
